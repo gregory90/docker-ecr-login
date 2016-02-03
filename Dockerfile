@@ -1,6 +1,7 @@
-FROM anigeo/awscli
+FROM ubuntu:14.04
 
-RUN apk add --update bash && rm -rf /var/cache/apk/*
+RUN apt-get update && apt-get install -y python3-pip
+RUN pip3 install awscli
 
 RUN mkdir -p /app
 RUN mkdir -p /data
