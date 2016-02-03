@@ -37,7 +37,7 @@ login_to_ecr() {
     echo "Creating login information..."
     $(aws ecr get-login --region us-east-1)
     docker login -u $PRIVATE_REGISTRY_LOGIN -p $PRIVATE_REGISTRY_PASSWORD -e none $PRIVATE_REGISTRY_HOST 
-    tar -cf /data/.docker.tar /root/.docker
+    tar -cf /data/.docker.tar /root/.docker/*
     rm /data/.docker.tar.gz
     gzip -7 /data/.docker.tar
     ls -al /data
