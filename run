@@ -1,0 +1,51 @@
+#!/bin/bash -e
+
+if [ -z "$TIMEOUT" ] ; then
+    TIMEOUT=14400 # 4 hours
+fi
+
+if [ -z "$AWS_ACCESS_KEY_ID" ] ; then
+    echo "AWS_ACCESS_KEY_ID not specified"
+    exit 1
+fi
+
+if [ -z "$AWS_SECRET_ACCESS_KEY" ] ; then
+    echo "AWS_SECRET_ACCESS_KEY not specified"
+    exit 1
+fi
+
+if [ -z "$PRIVATE_REGISTRY_LOGIN" ] ; then
+    echo "PRIVATE_REGISTRY_LOGIN not specified"
+    exit 1
+fi
+
+if [ -z "$PRIVATE_REGISTRY_PASSWORD" ] ; then
+    echo "PRIVATE_REGISTRY_PASSWORD not specified"
+    exit 1
+fi
+
+if [ -z "$PRIVATE_REGISTRY_HOST" ] ; then
+    echo "PRIVATE_REGISTRY_HOST not specified"
+    exit 1
+fi
+
+set +e
+
+login_to_ecr() {
+  while true
+  do
+    echo "Creating login information..."
+    $(aws ecr get-login --region us-east-1)
+    docker login -u $PRIVATE_REGISTRY_LOGIN -p $PRIVATE_REGISTRY_PASSWORD -e none $PRIVATE_REGISTRY_HOST 
+    tar -cf /data/.docker.tar /root/.docker
+    gzip -7 /data/.docker.tar
+    ls -al /data
+
+    echo "Sleeping..."
+    sleep $TIMEOUT
+  done
+}
+
+login_to_ecr
+
+wait
